@@ -7,9 +7,8 @@ import (
 )
 
 func main() {
-	//Tinder.LoginSms("905380310832")
+	//Tinder.LoginSms("90xxxxxxxxx")
 	TinderApp := Tinder.NewTinderClient("token")
-
 	data, err := TinderApp.RecsCore()
 
 	if err != nil {

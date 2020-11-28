@@ -40,7 +40,7 @@ func LoginSms(phone string) {
 	// unmarschal JSON
 	json.Unmarshal(headerJson, &c)
 
-	r.Post("https://api.gotinder.com/v3/auth/login?locale=tr").Send("\n\u000e\n\f" + phone)
+	r.Post("https://api.gotinder.com/v3/auth/login?locale=tr").Send("\n\u000e\n\u000c" + phone)
 	for k, v := range c {
 		r.Set(k, string(v))
 	}
