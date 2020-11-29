@@ -1,6 +1,8 @@
 package TinderClient
 
-import "time"
+import (
+	"time"
+)
 
 type Teaser struct {
 	String string `json:string`

@@ -7,9 +7,19 @@ import (
 
 func main() {
 	//Tinder.LoginSms("90xxxxxxxxx")
-	TinderApp := Tinder.NewTinderClient("06ed7c8a-b173-40a2-801e-6421633687b7")
-	user, _ := TinderApp.GetUser("5f9d2a87842123010053f7ef")
-	fmt.Println(user)
+	TinderApp := Tinder.NewTinderClient("token")
+	//user, _ := TinderApp.GetUser("user id")
+	recUsers, _ := TinderApp.RecsCore()
+	var total int = 0
+	for i := 0; i < len(recUsers); i++ {
+		var photos = recUsers[i].User.Photos
+		for _, photo := range photos {
+			go Tinder.DownloadImage(photo, "/tinder")
+			total++
+		}
+	}
+	fmt.Println(total)
+	fmt.Scanln()
 	//data, err := TinderApp.MyLikes()
 	//fmt.Println(data)
 	//if err != nil {
@@ -26,6 +36,5 @@ func main() {
 	//	}()
 	//	time.Sleep(time.Second)
 	//}
-	//fmt.Scanln("")
 
 }
