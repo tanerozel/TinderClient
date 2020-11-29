@@ -1,8 +1,8 @@
 package main
 
 import (
-	Tinder "TinderClient"
 	"fmt"
+	Tinder "github.com/tanerozel/TinderClient"
 )
 
 func main() {
