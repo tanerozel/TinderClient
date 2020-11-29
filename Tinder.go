@@ -3,6 +3,11 @@ package TinderClient
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"strings"
 )
 
 type client struct {
@@ -15,8 +20,14 @@ func NewTinderClient(token string) *client {
 	}
 }
 
-func LoginSms(phone string) {
-	r := NewRequest()
+func LoginSms(phone string) []byte {
+
+	httpClient := http.Client{}
+	var data = strings.NewReader("\n\u000e\n\u000c" + phone)
+	req, err := http.NewRequest("POST", "https://api.gotinder.com/v3/auth/login", data)
+	if err != nil {
+		log.Fatal(err)
+	}
 	var headerJson = []byte(`{
     "accept": "application/json",
     "accept-language": "tr,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
@@ -35,16 +46,24 @@ func LoginSms(phone string) {
     "user-session-time-elapsed": "24159",
     "x-supported-image-formats": "jpeg"
   }`)
-	c := make(map[string]json.RawMessage)
-
 	// unmarschal JSON
+	c := make(map[string]json.RawMessage)
 	json.Unmarshal(headerJson, &c)
-
-	r.Post("https://api.gotinder.com/v3/auth/login?locale=tr").Send("\n\u000e\n\u000c" + phone)
 	for k, v := range c {
-		r.Set(k, string(v))
+		req.Header.Set(k, string(v))
 	}
-	r.End()
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	bodyText, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%s\n", bodyText)
+	return bodyText
 }
 
 func (t *client) RecsCore() ([]RecsCoreUser, error) {
