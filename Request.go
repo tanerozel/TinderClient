@@ -55,8 +55,12 @@ type TRequest struct {
 	token     string
 }
 
-func (t *TRequest) Get(url string) (string, []error) {
-	return t.requester.Get("https://api.gotinder.com/v2/"+url).
+func (t *TRequest) Get(url string, version string) (string, []error) {
+	var baseUrl = "https://api.gotinder.com/"
+	if version != "" {
+		baseUrl = baseUrl + version + "/"
+	}
+	return t.requester.Get(baseUrl+url).
 		Set("Authorization", "Token token=\""+t.token+"\"").
 		Set("User-Agent", "TinderApp/1.9.1 (iPhone; iOS 14.2; Scale/3.00)").
 		Set("X-Auth-Token", t.token).

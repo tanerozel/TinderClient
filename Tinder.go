@@ -70,7 +70,7 @@ func (t *client) RecsCore() ([]RecsCoreUser, error) {
 	var recs RecsCoreResponse
 
 	url := "recs/core"
-	b, errs := t.requester.Get(url)
+	b, errs := t.requester.Get(url, "v2")
 	if errs != nil {
 		return recs.Data.Results, errs[0]
 	}
@@ -87,8 +87,8 @@ func (t *client) RecsCore() ([]RecsCoreUser, error) {
 	return recs.Data.Results, nil
 }
 
-func (t *client) LikeUser(userId string) (string, error) {
-	var recs RecsCoreResponse
+func (t *client) LikeUser(userId string) (interface{}, error) {
+	var recs interface{}
 
 	url := "like/" + userId
 	b, errs := t.requester.Post(url, "")
@@ -98,12 +98,50 @@ func (t *client) LikeUser(userId string) (string, error) {
 
 	err := json.Unmarshal([]byte(b), &recs)
 	if err != nil {
-		return b, err
+		return recs, err
 	}
 
-	return b, nil
+	return recs, nil
 }
 
-func (t *client) loginAuth(phone string) {
-	t.requester.Post("auth/login", phone)
+func (t *client) MyLikes() ([]RecsCoreUser, error) {
+	var recs RecsCoreResponse
+
+	url := "my-likes"
+	b, errs := t.requester.Get(url, "v2")
+	if errs != nil {
+		return recs.Data.Results, errs[0]
+	}
+
+	err := json.Unmarshal([]byte(b), &recs)
+	if err != nil {
+		return recs.Data.Results, err
+	}
+
+	if recs.Meta.Status != 200 {
+		return recs.Data.Results, errors.New("Error getting Recs Core")
+	}
+
+	return recs.Data.Results, nil
+}
+
+func (t *client) GetUser(userId string) (User, error) {
+	var resp UserResponse
+
+	url := "user/" + userId
+	b, errs := t.requester.Get(url, "")
+	if errs != nil {
+		return resp.Result, errs[0]
+	}
+
+	err := json.Unmarshal([]byte(b), &resp)
+	if err != nil {
+		return resp.Result, err
+	}
+
+	if resp.Status != 200 {
+		return resp.Result, errors.New("Error getting Recs Core")
+	}
+
+	return resp.Result, nil
 }
